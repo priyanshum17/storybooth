@@ -58,4 +58,11 @@ chatbot/
     └── README.md
 ```
 
-# 
+# Pending user testings
+This list collates a list of items that the current pipeline is imperfect about
+1. Feature enhancements:
+    1. Cloning the voice from Corian:
+        Studying on the cloning capability from OpenVoice
+    2. 
+2. Details
+    1. 
