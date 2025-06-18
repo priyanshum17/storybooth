@@ -1,0 +1,1 @@
+Download the `checkpoints` from https://myshell-public-repo-host.s3.amazonaws.com/openvoice/checkpoints_1226.zip and `checkpoints_v2` from https://myshell-public-repo-host.s3.amazonaws.com/openvoice/checkpoints_v2_0417.zip and unzip it to here.
