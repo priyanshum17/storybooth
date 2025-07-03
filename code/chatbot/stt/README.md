@@ -1,6 +1,6 @@
 # Speech Recognition Module
 
-This module provides multiple speech recognition engines with automatic fallback capabilities.
+This module provides multiple speech recognition engines.
 
 ## Available Handlers
 
@@ -16,16 +16,22 @@ This module provides multiple speech recognition engines with automatic fallback
 - Good accuracy with proper models
 - Completely private (no data sent to cloud)
 
-### 3. HybridSpeechHandler (Best of Both)
-- Automatically switches between Google and Vosk
-- Configurable primary preference (online vs offline)
-- Automatic fallback if primary fails
+### 3. WhisperSpeechHandler (Recommended)
+- Uses OpenAI Whisper model locally
+- No internet required
+- High accuracy
+- Requires `whisper`, `torch`, and `sounddevice` Python packages
 
 ## Installation
 
 ### Basic Dependencies
 ```bash
 pip install speech_recognition pyaudio
+```
+
+### For Whisper Support (Recommended)
+```bash
+pip install whisper torch sounddevice
 ```
 
 ### For Vosk Support
@@ -40,9 +46,18 @@ pip install -r requirements-vosk.txt
 
 ## Usage Examples
 
+### Using Whisper Speech Recognition (Recommended)
+```python
+from stt import WhisperSpeechHandler
+
+handler = WhisperSpeechHandler(model_name="base")  # or "small", "medium", "large"
+result = handler.listen_and_transcribe("What's your name?", [], [], False)
+print(f"You said: {result}")
+```
+
 ### Using Google Speech Recognition Only
 ```python
-from clean.stt import SpeechHandler
+from stt import SpeechHandler
 
 handler = SpeechHandler()
 result = handler.listen_and_transcribe("What's your name?", [], [], False)
@@ -51,76 +66,52 @@ print(f"You said: {result}")
 
 ### Using Vosk Offline Recognition Only
 ```python
-from clean.stt import VoskSpeechHandler
+from stt import VoskSpeechHandler
 
 handler = VoskSpeechHandler(model_path="models/vosk-model-en-us-0.22")
 result = handler.listen_and_transcribe("What's your name?", [], [], False)
 print(f"You said: {result}")
 ```
 
-### Using Hybrid Handler (Recommended)
-```python
-from clean.stt import HybridSpeechHandler
+## Features
 
-# Default: Google first, Vosk as backup
-handler = HybridSpeechHandler(vosk_model_path="models/vosk-model-en-us-0.22")
-
-# Or prefer offline first
-handler = HybridSpeechHandler(
-    vosk_model_path="models/vosk-model-en-us-0.22",
-    prefer_offline=True
-)
-
-result = handler.listen_and_transcribe("What's your name?", [], [], False)
-print(f"You said: {result}")
-
-# Check status
-status = handler.get_status()
-print(f"Google available: {status['google_available']}")
-print(f"Vosk available: {status['vosk_available']}")
-
-# Change preference at runtime
-handler.set_preference(prefer_offline=True)
-```
-
-### Integration with Existing Code
-Replace your existing SpeechHandler with HybridSpeechHandler for automatic fallback:
-
-```python
-# Before
-from clean.stt import SpeechHandler
-speech_handler = SpeechHandler()
-
-# After
-from clean.stt import HybridSpeechHandler
-speech_handler = HybridSpeechHandler(vosk_model_path="models/vosk-model-en-us-0.22")
-```
+- Microphone device selection
+- Timeout handling
+- Conversation logging
+- Comprehensive error handling
 
 ## Model Recommendations
 
 ### For Best Quality (if you have space)
-- **vosk-model-en-us-0.22** (~1.8GB)
-- Best accuracy for English
-- Good for production use
+- **Whisper large** (best accuracy, slowest)
+- **Whisper base/small/medium** (faster, less accurate)
 
 ### For Quick Testing/Development
-- **vosk-model-small-en-us-0.15** (~40MB)
-- Faster loading and processing
-- Lower memory usage
-- Acceptable accuracy for testing
+- **Whisper tiny/base** (fastest, lowest accuracy)
 
-### For Other Languages
-Visit https://alphacephei.com/vosk/models for models in other languages.
+## Troubleshooting
 
-## Features
+### Common Issues
 
-### All Handlers Support
-- Microphone device selection
-- Timeout handling
-- Command detection ("repeat question", "skip question")
-- Short-term memory management
-- Comprehensive error handling
-- Conversation logging
+1. **"No microphones found"**
+   - Check microphone connection
+   - Verify audio drivers
+   - Test microphone in other applications
+
+2. **"PyAudio or sounddevice installation failed"**
+   - macOS: `brew install portaudio && pip install pyaudio`
+   - Ubuntu: `sudo apt-get install portaudio19-dev && pip install pyaudio`
+   - Windows: Download precompiled wheel
+
+3. **"Torch not installed or GPU not available"**
+   - Install torch: `pip install torch`
+   - For GPU acceleration, ensure CUDA is installed and torch is built with CUDA support
+
+### Performance Tips
+
+- For offline use: Use WhisperSpeechHandler or VoskSpeechHandler
+- For best accuracy: Use WhisperSpeechHandler with "large" model
+- For privacy: Use WhisperSpeechHandler or VoskSpeechHandler only
 
 ### Special Commands
 - "repeat question" or "repeat that" → Returns `__REPEAT__`
@@ -158,7 +149,7 @@ Visit https://alphacephei.com/vosk/models for models in other languages.
 
 ### Performance Tips
 
-1. **For Offline Use**: Use VoskSpeechHandler or set HybridSpeechHandler to prefer_offline=True
-2. **For Best Accuracy**: Use HybridSpeechHandler with Google as primary
-3. **For Privacy**: Use VoskSpeechHandler only
-4. **For Reliability**: Use HybridSpeechHandler for automatic fallback 
+1. **For Offline Use**: Use VoskSpeechHandler or set WhisperSpeechHandler to prefer_offline=True
+2. **For Best Accuracy**: Use WhisperSpeechHandler with "large" model
+3. **For Privacy**: Use VoskSpeechHandler or WhisperSpeechHandler only
+4. **For Reliability**: Use WhisperSpeechHandler for automatic fallback 

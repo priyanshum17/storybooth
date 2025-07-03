@@ -26,7 +26,7 @@ import os # For file operations
 # import pyttsx3 # No longer needed
 import torch
 from tts.openvoice_instance import OpenVoiceTTS, OPENVOICE_OUTPUT_AUDIO_PATH
-from stt import initialize_speech_handler, AudioManager
+from tts.openvoice_tts_manager import AudioManager
 
 # Import prompt functions from the new modular structure
 from prompts import (
@@ -35,6 +35,7 @@ from prompts import (
     get_ollama_transition_on_no_reply
 )
 from prompts.base_prompts import OLLAMA_MODEL
+from stt import WhisperSpeechHandler
 
 # --- Configuration ---
 MICROPHONE_DEVICE_INDEX = None
@@ -68,9 +69,6 @@ def add_to_short_term_memory(role, type, content):
             SHORT_TERM_MEMORY = SHORT_TERM_MEMORY[-(MAX_SHORT_TERM_MEMORY_TURNS * 3):]
 
 
-
-
-
 # --- Conversation Log Saving --- (No changes needed here)
 def save_conversation_log():
     if not CONVERSATION_LOG: return
@@ -85,31 +83,26 @@ def save_conversation_log():
 # --- Main Execution ---
 if __name__ == "__main__":
 
-    # Initialize speech recognition (Google first, then Vosk if offline)
-    speech_handler, engine_type = initialize_speech_handler(
-        microphone_device_index=MICROPHONE_DEVICE_INDEX,
-        vosk_model_path=VOSK_MODEL_PATH
-    )
+    # Initialize Whisper speech recognition
+    speech_handler = WhisperSpeechHandler(model_name="base", microphone_device_index=MICROPHONE_DEVICE_INDEX)
     audio_manager = AudioManager()
     
-    # Check if any speech handler was successfully initialized
-    if not speech_handler:
-        error_msg = "[SYSTEM_ERROR] No speech recognition engines could be initialized. Exiting."
+    # Check if Whisper handler was successfully initialized
+    status = speech_handler.get_status()
+    if not status['whisper_available']:
+        error_msg = "[SYSTEM_ERROR] Whisper speech recognition could not be initialized. Exiting."
         print(error_msg)
         print("[SYSTEM_ERROR] Please ensure:")
         print("  - Your microphone is connected and working")
-        print("  - For Google: You have internet connectivity")
-        print("  - For Vosk: You have downloaded a model (see requirements-vosk.txt)")
+        print("  - You have installed the required packages: whisper, torch, sounddevice")
         CONVERSATION_LOG.append(f"[{datetime.datetime.now().isoformat()}] {error_msg}")
         if audio_manager: 
-            audio_manager.speak("No speech recognition engines could be initialized. Please check your setup.", CONVERSATION_LOG)
+            audio_manager.speak("Whisper speech recognition could not be initialized. Please check your setup.", CONVERSATION_LOG)
         save_conversation_log()
         exit()
     
-    # Log which engine is being used
-    engine_name = "Google Speech Recognition (online)" if engine_type == "google" else "Vosk Speech Recognition (offline)"
-    print(f"[SYSTEM] ✓ Using: {engine_name}")
-    CONVERSATION_LOG.append(f"[{datetime.datetime.now().isoformat()}] [SYSTEM] Active engine: {engine_name}")
+    print(f"[SYSTEM] ✓ Using: Whisper Speech Recognition (offline)")
+    CONVERSATION_LOG.append(f"[{datetime.datetime.now().isoformat()}] [SYSTEM] Active engine: Whisper Speech Recognition (offline)")
     CONVERSATION_LOG.append(f"[{datetime.datetime.now().isoformat()}] [SYSTEM] Speech recognition initialization complete")
 
     audio_manager.speak_and_log(f"[SYSTEM] Welcome! I'm your AI Story Guide, using Ollama (model: '{OLLAMA_MODEL}'). Let's explore some stories together.", CONVERSATION_LOG, is_system_message=True) # This system message won't be spoken by default
@@ -214,7 +207,3 @@ if __name__ == "__main__":
         # Clean up any temporary files and resources
         if audio_manager:
             audio_manager.cleanup()
-        if speech_handler:
-            # Vosk handler has cleanup method, Google handler doesn't need it
-            if hasattr(speech_handler, 'cleanup'):
-                speech_handler.cleanup()

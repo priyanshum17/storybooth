@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from speech_handler import SpeechHandler
 from vosk_speech_handler import VoskSpeechHandler
-from hybrid_speech_handler import HybridSpeechHandler
+from hybrid_speech_handler import WhisperSpeechHandler
 
 
 def test_google_handler():
@@ -94,23 +94,22 @@ def test_vosk_handler():
         print(f"Vosk handler test failed: {e}")
 
 
-def test_hybrid_handler():
-    """Test Hybrid speech recognition handler."""
+def test_whisper_handler():
+    """Test Whisper speech recognition handler."""
     print("\n" + "="*50)
-    print("TESTING HYBRID SPEECH HANDLER")
+    print("TESTING WHISPER SPEECH HANDLER")
     print("="*50)
     
     try:
-        handler = HybridSpeechHandler()
+        handler = WhisperSpeechHandler()
         
         # Check status
         status = handler.get_status()
-        print(f"Google available: {status['google_available']}")
-        print(f"Vosk available: {status['vosk_available']}")
+        print(f"Whisper available: {status['whisper_available']}")
         print(f"Prefer offline: {status['prefer_offline']}")
         
-        if not status['google_available'] and not status['vosk_available']:
-            print("No speech recognition engines available!")
+        if not status['whisper_available']:
+            print("No speech recognition engine available!")
             return
         
         conversation_log = []
@@ -128,17 +127,11 @@ def test_hybrid_handler():
         print(f"Conversation log entries: {len(conversation_log)}")
         print(f"Short-term memory entries: {len(short_term_memory)}")
         
-        # Test preference switching
-        if status['google_available'] and status['vosk_available']:
-            print("\nTesting preference switching...")
-            handler.set_preference(prefer_offline=True)
-            print("Now preferring offline (Vosk) first")
-        
         # Cleanup
         handler.cleanup()
         
     except Exception as e:
-        print(f"Hybrid handler test failed: {e}")
+        print(f"Whisper handler test failed: {e}")
 
 
 def main():
@@ -152,7 +145,7 @@ def main():
         print("Choose test:")
         print("1. Test Google Speech Handler")
         print("2. Test Vosk Speech Handler") 
-        print("3. Test Hybrid Speech Handler")
+        print("3. Test Whisper Speech Handler")
         print("4. Run all tests")
         print("5. Exit")
         print("="*60)
@@ -164,11 +157,11 @@ def main():
         elif choice == '2':
             test_vosk_handler()
         elif choice == '3':
-            test_hybrid_handler()
+            test_whisper_handler()
         elif choice == '4':
             test_google_handler()
             test_vosk_handler()
-            test_hybrid_handler()
+            test_whisper_handler()
         elif choice == '5':
             print("Exiting...")
             break

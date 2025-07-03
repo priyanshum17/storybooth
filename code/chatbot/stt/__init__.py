@@ -3,8 +3,7 @@
 
 from .speech_handler import SpeechHandler, test_google_speech_availability, initialize_speech_handler
 from .vosk_speech_handler import VoskSpeechHandler
-from .hybrid_speech_handler import HybridSpeechHandler
-from .audio_manager import AudioManager
+from .hybrid_speech_handler import WhisperSpeechHandler
 
-__all__ = ['SpeechHandler', 'VoskSpeechHandler', 'HybridSpeechHandler', 'AudioManager', 
+__all__ = ['SpeechHandler', 'VoskSpeechHandler', 'WhisperSpeechHandler', 
            'test_google_speech_availability', 'initialize_speech_handler'] 
