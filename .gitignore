@@ -199,3 +199,4 @@ code/chatbot/tts/openvoice_models_downloaded/*
 code/chatbot/tts/OpenVoice*
 **/tts/MeloTTS/*
 code/chatbot/tts/MeloTTS/
+processed/
