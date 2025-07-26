@@ -196,7 +196,8 @@ cython_debug/
 .cursorindexingignore
 code/chatbot/conversations_logs/*.txt
 code/chatbot/tts/openvoice_models_downloaded/*
-code/chatbot/tts/OpenVoice*
+code/chatbot/tts/OpenVoice/
+code/chatbot/tts/OpenVoice-temp/
 **/tts/MeloTTS/*
 code/chatbot/tts/MeloTTS/
 processed/
