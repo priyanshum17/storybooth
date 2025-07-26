@@ -1,9 +1,7 @@
 # AI prompting Agent
 The current setup are separating into 3 modules:
 1. speech-to-text:
-    Hybrid way of using 
-    1. google speech recognition (online usage)
-    2. Vosk (offline usage)
+    1. Whispher (best performance, offline)
 2. text-to-speech:
     1. [Openvoice](https://github.com/myshell-ai/OpenVoice/tree/main)
 3. Lightweight LLM models with ollama
@@ -29,52 +27,20 @@ chatbot/
 ├── README.md
 ├── main.py                   # Main application entry point
 ├── requirements.txt          # Main dependencies
-├── requirements-test.txt     # Test dependencies
-├── TESTING.md               # Testing documentation
-├── conversations_logs/       # Conversation history
-│   └── placeholder.txt
-├── prompts/                 # Prompt management
+├── Dockerfile                # Docker configuration for deployment
+├── bot.py                    # (Empty or placeholder for bot logic)
+├── conversations_logs/       # Conversation history logs
+├── resources/                # Audio and text resources
+├── stt/                      # Speech-to-Text module
 │   ├── __init__.py
-│   ├── base_prompts.py
-│   ├── followup_prompts.py
-│   ├── question_prompts.py
-│   └── README.md
-├── stt/                     # Speech-to-Text module
+│   ├── README.md
+│   └── whisper_speech_handler.py
+├── tts/                      # Text-to-Speech module
+│   ├── fish_tts_manager.py
+│   ├── simple_tts_manager.py
+│   └── MeloTTS/              # MeloTTS submodule and related files
+├── utils/                    # Utility functions
 │   ├── __init__.py
-│   ├── audio_manager.py
-│   ├── hybrid_speech_handler.py
-│   ├── speech_handler.py
-│   └── README.md
-├── tts/                     # Text-to-Speech module
-│   ├── __init__.py
-│   ├── openvoice_instance.py
-│   ├── OpenVoice/           # Submodule
-│   └── openvoice_models_downloaded/
-└── tests/                   # Testing suite
-    ├── __init__.py
-    ├── conftest.py
-    ├── test_base_prompts.py
-    ├── test_followup_prompts.py
-    └── README.md
+│   └── ollama_utils.py
 ```
-
-# Pending user testings
-This list collates a list of items that the current pipeline is imperfect about
-1. Feature enhancements:
-    1. Cloning Corian's voice:
-        Studying on the cloning capability from OpenVoice, Openvoice clone voice with zero shot but the current progress of comparing the cloned voice does not seem to capture the nuances in a nice way. Example experiment result:
-        
-        [Example sample audio](./resources/example_reference_elon.mp3)
-        
-        [Original voice](./resources/original_nuances.wav)
-        
-        [Transferred voice](./resources/output_v2_nuances_en-newest.wav)
-        
-        *The notebook to generate the above 3 audios can be found at `./resource/test.ipynb`
-2. Optimisation
-    1. Update greeting message - currently the greeting message is fixed here: https://github.com/priyanshum17/storybooth/blob/39229ca2f4b5a1e558b148ad015bbcb0013ee1bd/code/chatbot/main.py#L117
-    2. Currently the agent waits for **7 seconds** for the user to start speaking, after which it times out if no speech is detected. Once the user starts, it will listen for up to 20 seconds for the response. Should we want to make it longer/shorter? Or more ideally, is there alternative to make it interactive i.e. stop when users start interrupting in a natural way?
-    See: https://github.com/priyanshum17/storybooth/blob/39229ca2f4b5a1e558b148ad015bbcb0013ee1bd/code/chatbot/stt/speech_handler.py#L176 
-    3. ~~Currently, the audio manager is mistakenly loaded from the `stt` (speech-to-text) module. To improve modularity, reorganize the code so that the audio manager is independent and can be used by both `stt` and `tts` modules as needed.  
-    See: https://github.com/priyanshum17/storybooth/blob/39229ca2f4b5a1e558b148ad015bbcb0013ee1bd/code/chatbot/stt/audio_manager.py#L10-L12~~
 
