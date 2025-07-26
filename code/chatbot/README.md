@@ -27,7 +27,6 @@ chatbot/
 ├── README.md
 ├── main.py                   # Main application entry point
 ├── requirements.txt          # Main dependencies
-├── Dockerfile                # Docker configuration for deployment
 ├── bot.py                    # (Empty or placeholder for bot logic)
 ├── conversations_logs/       # Conversation history logs
 ├── resources/                # Audio and text resources
