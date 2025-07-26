@@ -1,7 +1,7 @@
 # AI prompting Agent
 The current setup are separating into 3 modules:
 1. speech-to-text:
-    1. Whispher (best performance, offline)
+    1. [Whispher (best performance, offline)](https://github.com/openai/whisper)
 2. text-to-speech:
     1. [Openvoice](https://github.com/myshell-ai/OpenVoice/tree/main)
 3. Lightweight LLM models with ollama
